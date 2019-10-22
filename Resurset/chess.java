@@ -28,16 +28,9 @@ public class chess extends JFrame
 			JFrame.setDefaultLookAndFeelDecorated(true); //Make it look nice
 	        JFrame frame = new JFrame("Chess Game"); //Title
 	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);	        
-	        JPanel panRoot = new JPanel(new BorderLayout());
-			panRoot.setOpaque(true);
-			panRoot.setPreferredSize(new Dimension(550, 650));
-
-	        
 	        chessGUI chessWindow = new chessGUI();
 	        frame.setContentPane(chessWindow.createGUI(frame));
 
-//	        frame.addWindowFocusListener(chessWindow);
-	        
 	        frame.setSize(550,650);
 	        frame.setResizable(false);
 	        frame.setVisible(true);  
