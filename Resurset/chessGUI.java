@@ -5,7 +5,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.JOptionPane;
 
-public class chessGUI {
+public class chessGUI implements ActionListener, KeyListener, WindowFocusListener{
 
 	private windowChessBoard mainChessBoard;
 	private objCreateAppletImage createImage;
@@ -35,8 +35,14 @@ public class chessGUI {
 		cmdNewGame = new JButton("New Game");
 		cmdSetNames = new JButton("Set Names");
 
+		cmdNewGame.addActionListener(this);
+		cmdSetNames.addActionListener(this);
+
 		txtPlayerOne = new JTextField("Player 1", 10);
 		txtPlayerTwo = new JTextField("Player 2", 10);
+
+		txtPlayerOne.addKeyListener(this);
+		txtPlayerTwo.addKeyListener(this);
 
 		lblPlayerOne = new JLabel("    ", JLabel.RIGHT);
 		lblPlayerTwo = new JLabel("    ", JLabel.RIGHT);
@@ -108,6 +114,56 @@ public class chessGUI {
 
 		return panRoot;
 
+	}
+
+	public void actionPerformed(ActionEvent e) {
+
+		if (e.getSource() == cmdSetNames) {
+
+			if (txtPlayerOne.getText().equals("")) {
+				txtPlayerOne.setText("Player 1");
+			}
+
+			if (txtPlayerTwo.getText().equals("")) {
+				txtPlayerTwo.setText("Player 2");
+			}
+
+			mainChessBoard.setNames(txtPlayerOne.getText(), txtPlayerTwo.getText());
+
+		} else if (e.getSource() == cmdNewGame) {
+			mainChessBoard.newGame();
+		}
+
+	}
+
+	public void keyTyped(KeyEvent e) {
+
+		String strBuffer = "";
+		char c = e.getKeyChar();
+
+		if (e.getSource() == txtPlayerOne) {
+			strBuffer = txtPlayerOne.getText();
+		} else {
+			strBuffer = txtPlayerTwo.getText();
+		}
+
+		if (strBuffer.length() > 10 && !((c == KeyEvent.VK_BACK_SPACE) || (c == KeyEvent.VK_DELETE))) {
+			e.consume();
+		}
+
+	}
+
+	public void keyPressed(KeyEvent e) {
+	}
+
+	public void keyReleased(KeyEvent e) {
+	}
+
+	public void windowGainedFocus(WindowEvent e) {
+		mainChessBoard.gotFocus();
+	}
+
+	public void windowLostFocus(WindowEvent e) {
 	}
 
 }
