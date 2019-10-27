@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import ServerSide.ChessInterface;
 
-public class windowChessBoard extends objChessBoard {
+public class windowChessBoard extends objChessBoard implements MouseListener, MouseMotionListener{
 
 	private final int refreshRate = 5; 
 
@@ -510,7 +510,7 @@ public class windowChessBoard extends objChessBoard {
 			int y = e.getY();
 			
 			if ((x > 60 && x < 430) && (y > 60 && y < 430)) 
-			
+			{
 				if (refreshCounter >= refreshRate)
 				{
 								
@@ -528,12 +528,12 @@ public class windowChessBoard extends objChessBoard {
 				{
 					refreshCounter++;
 				}
-			
 			}
-			
 		}
-		
+			
 	}
+		
+	
 	
 	public void mouseMoved (MouseEvent e)
 	{
