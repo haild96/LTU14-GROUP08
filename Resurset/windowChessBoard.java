@@ -23,8 +23,53 @@ public class windowChessBoard extends objChessBoard {
 	private int startingX = 0, startingY = 0, currentX = 0, currentY = 0, refreshCounter = 0;
 	private boolean firstTime = true, hasWon = false, isDragging = false;
 
+	private objPawn pawnObject = new objPawn();
+	private objRock rockObject = new objRock();
+	private objKnight knightObject = new objKnight();
+	private objBishop bishopObject = new objBishop();
+	private objQueen queenObject = new objQueen();
+	private objKing kingObject = new objKing();
+
+	public int tempSX = 0; // mousePressed(x)
+	public int tempSY = 0; // mousePressed(y)
+	public int tempDesColumn = 0; // mouseReleased(desColumn)
+	public int tempDesRow = 0; //  mouseReleased(desRow)
+	public int tempCurrentY = 0; // mouseRelease(currentY)
+	public int tempCurrentX = 0; // mouseReleased(currentX)
+	public String myType = "none";
+
+	public windowChessBoard ()
+	{
+		
+		this.addMouseListener(this);
+		this.addMouseMotionListener(this);
+		
+	}
+
+		private String getPlayerMsg ()
+	{
+		
+		if (hasWon)
+		{
+			return "Congrats " + strPlayerName[currentPlayer - 1] + ", you are the winner!";
+		}
+		else if (firstTime)
+		{
+			return "" + strPlayerName[0] + " you are black, " + strPlayerName[1] + " you are white. Press new game to start";
+		}
+		else
+		{
+			return "" + strPlayerName[currentPlayer - 1] + " move";
+		}
+		
+	}	
+
 	private void resetBoard() {
+		hasWon 		  = false;
+		currentPlayer = 1;
+		strStatusMsg  = getPlayerMsg();
 		cellMatrix.resetMatrix();
+		repaint();
 	}
 
 	public void setupImages(Image[] imgRed, Image[] imgBlue) {
@@ -33,6 +78,16 @@ public class windowChessBoard extends objChessBoard {
 		imgPlayer[1] = imgBlue;
 		resetBoard();
 
+	}
+
+	public void setNames (String strPlayer1Name, String strPlayer2Name)
+	{
+		
+		strPlayerName[0] = strPlayer1Name;
+		strPlayerName[1] = strPlayer2Name;
+		strStatusMsg = getPlayerMsg();
+		repaint();
+		
 	}
 
 	protected void drawExtra(Graphics g) {
