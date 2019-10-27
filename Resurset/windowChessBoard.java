@@ -426,4 +426,122 @@ public class windowChessBoard extends objChessBoard {
 		mouseReleased(e);
 	}
 
+	public void mousePressed (MouseEvent e)
+	{
+		
+		if ((!hasWon && !firstTime) &&(myType.equals("0") || myType.equals("1")))
+		{			
+		
+			int x = e.getX();
+			int y = e.getY();
+			
+			//Vlere e shtuar
+			tempSX = x;
+			tempSY = y;
+			
+			System.out.println("StartX:"+x+" StartY:"+y);
+			if ((x > 60 && x < 430) && (y > 60 && y < 430)) //in the correct bounds
+			{
+			
+				startRow = findWhichTileSelected(y);
+				startColumn = findWhichTileSelected(x);
+						
+				if (cellMatrix.getPlayerCell(startRow, startColumn) == currentPlayer)
+				{
+					
+					pieceBeingDragged = cellMatrix.getPieceCell(startRow, startColumn);
+					cellMatrix.setPieceCell(startRow, startColumn, 6);
+					cellMatrix.setPlayerCell(startRow, startColumn, 0);
+					isDragging = true;
+					
+				}
+				else
+				{
+					/*Nese nuk e keni rendin dhe pretendoni te levizni*/
+					isDragging = false;
+				}
+			
+			}
+			
+		}
+		
+	}
+	
+	public void mouseReleased (MouseEvent e)
+	{
+		
+		if (isDragging) //Vlera e dragging eshte true
+		{	
+			isDragging = false;
+			
+			int desRow = findWhichTileSelected(currentY);
+			int desColumn = findWhichTileSelected(currentX);
+			
+			//Vlere e shtuar
+			tempDesColumn= desColumn;
+			tempDesRow = desRow;
+			tempCurrentY = currentY;
+			tempCurrentX = currentX;
+			if(myType.equals("0") || myType.equals("1")){
+				checkMove(desRow, desColumn);
+				repaint();
+				//System.out.println("mouseReleased: desRow:" +desRow+" desColumn:" +desColumn );
+				try {
+					ChessInterface stubChess= (ChessInterface)Naming.lookup("rmi://"
+													+chess.IP+":"+chess.PORT+"/Chess");
+			
+					stubChess.sendMoveAndReciveServer(tempSX,tempSY,tempDesColumn, tempDesRow);
+					stubChess.tellWhoHasToPlay(myType);
+				} catch (Exception re) {
+				}
+				startTimer();
+			}
+		}
+		
+	}
+	
+	public void mouseDragged (MouseEvent e)
+	{
+		
+		if (isDragging)
+		{
+			
+			int x = e.getX();
+			int y = e.getY();
+			
+			if ((x > 60 && x < 430) && (y > 60 && y < 430)) 
+			
+				if (refreshCounter >= refreshRate)
+				{
+								
+					currentX = x;
+					currentY = y;
+					refreshCounter = 0;
+					int desRow = findWhichTileSelected(currentY);
+					int desColumn = findWhichTileSelected(currentX);
+					
+					updatePaintInstructions(desRow, desColumn);
+					repaint();
+					
+				}
+				else
+				{
+					refreshCounter++;
+				}
+			
+			}
+			
+		}
+		
+	}
+	
+	public void mouseMoved (MouseEvent e)
+	{
+	}
+	
+	public void gotFocus ()
+	{
+		repaint();		
+	}
+
 }
