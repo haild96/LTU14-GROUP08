@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import ServerSide.ChessInterface;
 
-public class windowChessBoard extends objChessBoard {
+public class windowChessBoard extends objChessBoard implements MouseListener, MouseMotionListener{
 
 	private final int refreshRate = 5; 
 
