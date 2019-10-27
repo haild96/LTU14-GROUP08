@@ -510,7 +510,7 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 			int y = e.getY();
 			
 			if ((x > 60 && x < 430) && (y > 60 && y < 430)) 
-			
+			{
 				if (refreshCounter >= refreshRate)
 				{
 								
@@ -528,12 +528,12 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 				{
 					refreshCounter++;
 				}
-			
 			}
-			
 		}
-		
+			
 	}
+		
+	
 	
 	public void mouseMoved (MouseEvent e)
 	{
