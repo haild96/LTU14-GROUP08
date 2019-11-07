@@ -22,6 +22,7 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 	private int currentPlayer = 1, startRow = 0, startColumn = 0, pieceBeingDragged = 0;
 	private int startingX = 0, startingY = 0, currentX = 0, currentY = 0, refreshCounter = 0;
 	private boolean firstTime = true, hasWon = false, isDragging = false;
+	private boolean isMoveSuccess = true;
 
 	private objPawn pawnObject = new objPawn();
 	private objRock rockObject = new objRock();
@@ -37,6 +38,7 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 	public int tempCurrentY = 0; // mouseRelease(currentY)
 	public int tempCurrentX = 0; // mouseReleased(currentX)
 	public String myType = "none";
+	public boolean isMove = false;
 
 	public int[] vlerat = {0,0,0,0};
 	public int[] vleratTemp = vlerat;
@@ -139,27 +141,46 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 		vecPaintInstructions.clear(); // clear all paint instructions
 	}
 
-		public void newGame ()
+	public void newGame ()
 	{
 		
 		firstTime = false;
 		resetBoard();
-		
-		myType = JOptionPane.showInputDialog("Sheno kush fillon(0 une, 1 shoku)");
-		if(!myType.equals("0")){
-			startTimer();
-		}
-		
-		if(myType.equals("0") || myType.equals("1")){
-			try {
-				ChessInterface stubChess= (ChessInterface)Naming.lookup("rmi://"
-												+chess.IP+":"+chess.PORT+"/Chess");
-		
+
+		try {
+			ChessInterface stubChess= (ChessInterface)Naming.lookup("rmi://"
+											+chess.IP+":"+chess.PORT+"/Chess");
+
+			System.out.println(stubChess.getCheckExistWhoPlay());
+	
+			if(!stubChess.getCheckExistWhoPlay()) {
+				myType = "0";
 				stubChess.tellWhoHasToPlay(myType);
-			} catch (Exception re) {
-				re.printStackTrace();
+				stubChess.setCheckExistWhoPlay();
+			} else {
+				myType = "1";
+				stubChess.tellWhoHasToPlay(myType);
+				startTimer();
 			}
+		} catch (Exception re) {
+			re.printStackTrace();
 		}
+		
+		// myType = JOptionPane.showInputDialog("Sheno kush fillon(0 une, 1 shoku)");
+		// if(!myType.equals("0")){
+		// 	startTimer();
+		// }
+		
+		// if(myType.equals("0") || myType.equals("1")){
+		// 	try {
+		// 		ChessInterface stubChess= (ChessInterface)Naming.lookup("rmi://"
+		// 										+chess.IP+":"+chess.PORT+"/Chess");
+		
+		// 		stubChess.tellWhoHasToPlay(myType);
+		// 	} catch (Exception re) {
+		// 		re.printStackTrace();
+		// 	}
+		// }
 	}
 
 	public void startTimer(){
@@ -170,13 +191,17 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 													+chess.IP+":"+chess.PORT+"/Chess");
 			
 					vlerat = stubChess.getMoveLocation();
-					System.out.println("myType:" + myType +" stub:"+ stubChess.getTellWhoHasToPlay());
+					// System.out.println("myType:" + myType +" stub:"+ stubChess.getTellWhoHasToPlay());
+					System.out.println("isMoveSuccess"+isMoveSuccess);
 					if(!myType.equals(stubChess.getTellWhoHasToPlay())){
-					  moveServerPieces(vlerat[0], vlerat[1], vlerat[2], vlerat[3]);
-					  System.out.println("inhere");
-					 if(myType.equals("0") || myType.equals("1")){
-						  timer.stop();
-					 }
+						  	moveServerPieces(vlerat[0], vlerat[1], vlerat[2], vlerat[3]);
+						  	System.out.println("------------------");
+						  	System.out.println("vlerat[0]"+vlerat[0]+"vlerat[1]"+vlerat[1]);
+						  	System.out.println("vlerat[2]"+vlerat[2]+"vlerat[3]"+vlerat[3]);
+
+						if(myType.equals("0") || myType.equals("1")){
+							timer.stop();
+						}
 					}
 				} catch (Exception re) {
 					re.printStackTrace();
@@ -226,7 +251,8 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 			int desRow = tDesRow;
 			int desColumn = tDesColumn;
 			System.out.println("DestX:"+desRow+" DestY:"+desColumn);
-			checkMove(desRow, desColumn);	
+			checkMove(desRow, desColumn);
+			isMove = false;	
 			repaint();
 			
 		}
@@ -266,6 +292,7 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 		
 		if (legalMove)
 		{
+			isMoveSuccess = true;
 			int newDesRow = 0;
 			int newDesColumn = 0;
 			switch (pieceBeingDragged)
@@ -388,7 +415,7 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 						break;
 						
 			}
-				
+			isMoveSuccess = false;
 			unsucessfullDrag(desRow, desColumn);
 			
 		}
@@ -397,6 +424,7 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 
 	private void unsucessfullDrag (int desRow, int desColumn)
 	{
+		isMove = false;
 		cellMatrix.setPieceCell(startRow, startColumn, pieceBeingDragged);
 		cellMatrix.setPlayerCell(startRow, startColumn, currentPlayer);
 		
@@ -439,27 +467,63 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 			tempSX = x;
 			tempSY = y;
 			
+			System.out.println("-------------------------");
 			System.out.println("StartX:"+x+" StartY:"+y);
 			if ((x > 60 && x < 430) && (y > 60 && y < 430)) //in the correct bounds
 			{
 			
 				startRow = findWhichTileSelected(y);
 				startColumn = findWhichTileSelected(x);
+
+				if(myType.equals("0")) {
+					if (cellMatrix.getPlayerCell(startRow, startColumn) == 1 && !isMove)
+					{
 						
-				if (cellMatrix.getPlayerCell(startRow, startColumn) == currentPlayer)
-				{
-					
-					pieceBeingDragged = cellMatrix.getPieceCell(startRow, startColumn);
-					cellMatrix.setPieceCell(startRow, startColumn, 6);
-					cellMatrix.setPlayerCell(startRow, startColumn, 0);
-					isDragging = true;
-					
+						pieceBeingDragged = cellMatrix.getPieceCell(startRow, startColumn);
+						cellMatrix.setPieceCell(startRow, startColumn, 6);
+						cellMatrix.setPlayerCell(startRow, startColumn, 0);
+						isDragging = true;
+						isMove = true;
+						
+					}
+					else
+					{
+						/*Nese nuk e keni rendin dhe pretendoni te levizni*/
+						isDragging = false;
+					}
+				} else if(myType.equals("1")) {
+					if (cellMatrix.getPlayerCell(startRow, startColumn) == 2 && !isMove)
+					{
+						
+						pieceBeingDragged = cellMatrix.getPieceCell(startRow, startColumn);
+						cellMatrix.setPieceCell(startRow, startColumn, 6);
+						cellMatrix.setPlayerCell(startRow, startColumn, 0);
+						isDragging = true;
+						isMove = true;
+						
+					}
+					else
+					{
+						/*Nese nuk e keni rendin dhe pretendoni te levizni*/
+						isDragging = false;
+					}
 				}
-				else
-				{
-					/*Nese nuk e keni rendin dhe pretendoni te levizni*/
-					isDragging = false;
-				}
+						
+				// if (cellMatrix.getPlayerCell(startRow, startColumn) == currentPlayer)
+				// {
+					
+				// 	pieceBeingDragged = cellMatrix.getPieceCell(startRow, startColumn);
+				// 	cellMatrix.setPieceCell(startRow, startColumn, 6);
+				// 	cellMatrix.setPlayerCell(startRow, startColumn, 0);
+				// 	isDragging = true;
+				// 	isMove = true;
+					
+				// }
+				// else
+				// {
+				// 	/*Nese nuk e keni rendin dhe pretendoni te levizni*/
+				// 	isDragging = false;
+				// }
 			
 			}
 			
@@ -486,15 +550,18 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 				checkMove(desRow, desColumn);
 				repaint();
 				//System.out.println("mouseReleased: desRow:" +desRow+" desColumn:" +desColumn );
-				try {
-					ChessInterface stubChess= (ChessInterface)Naming.lookup("rmi://"
-													+chess.IP+":"+chess.PORT+"/Chess");
-			
-					stubChess.sendMoveAndReciveServer(tempSX,tempSY,tempDesColumn, tempDesRow);
-					stubChess.tellWhoHasToPlay(myType);
-				} catch (Exception re) {
+				if(isMoveSuccess) {
+					try {
+						ChessInterface stubChess= (ChessInterface)Naming.lookup("rmi://"
+														+chess.IP+":"+chess.PORT+"/Chess");
+				
+						stubChess.sendMoveAndReciveServer(tempSX,tempSY,tempDesColumn, tempDesRow);
+						stubChess.tellWhoHasToPlay(myType);
+					} catch (Exception re) {
+					}
+					startTimer();
 				}
-				startTimer();
+				
 			}
 		}
 		

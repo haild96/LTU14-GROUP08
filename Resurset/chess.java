@@ -16,7 +16,7 @@ import ServerSide.ChessInterface;
 
 public class chess extends JFrame
 {
-	public static String IP   = "10.84.0.27";
+	public static String IP   = "10.69.0.81";
 	public static String PORT = "1099";
 		
 	public static void main(String[] args)
