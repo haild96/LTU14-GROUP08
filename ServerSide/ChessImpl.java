@@ -7,6 +7,8 @@ public class ChessImpl extends UnicastRemoteObject implements ChessInterface{
 	
 	public int[] n = new int[4];
 	public String myType = "none"; //ne fillim asgje
+	public boolean isExistPlayer = false;
+	
 	public ChessImpl() throws RemoteException {
 		super();
 		// TODO Auto-generated constructor stub
@@ -33,6 +35,14 @@ public class ChessImpl extends UnicastRemoteObject implements ChessInterface{
 	
 	public String getTellWhoHasToPlay() throws RemoteException{
 		return myType;
+	}
+
+	public boolean getCheckExistWhoPlay() throws RemoteException {
+		return isExistPlayer;
+	}
+
+	public void setCheckExistWhoPlay() throws RemoteException {
+		isExistPlayer = !isExistPlayer;
 	}
 
 }
