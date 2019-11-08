@@ -3,12 +3,17 @@ package Resurset;
 import java.awt.*;
 import java.awt.event.*;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+
 import javax.swing.JOptionPane;
 import javax.swing.JDialog;
 
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.MalformedURLException;
+
 import ServerSide.ChessInterface;
 
 public class windowChessBoard extends objChessBoard implements MouseListener, MouseMotionListener{
@@ -165,22 +170,6 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 		} catch (Exception re) {
 			re.printStackTrace();
 		}
-		
-		// myType = JOptionPane.showInputDialog("Sheno kush fillon(0 une, 1 shoku)");
-		// if(!myType.equals("0")){
-		// 	startTimer();
-		// }
-		
-		// if(myType.equals("0") || myType.equals("1")){
-		// 	try {
-		// 		ChessInterface stubChess= (ChessInterface)Naming.lookup("rmi://"
-		// 										+chess.IP+":"+chess.PORT+"/Chess");
-		
-		// 		stubChess.tellWhoHasToPlay(myType);
-		// 	} catch (Exception re) {
-		// 		re.printStackTrace();
-		// 	}
-		// }
 	}
 
 	public void startTimer(){
@@ -192,7 +181,7 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 			
 					vlerat = stubChess.getMoveLocation();
 					// System.out.println("myType:" + myType +" stub:"+ stubChess.getTellWhoHasToPlay());
-					System.out.println("isMoveSuccess"+isMoveSuccess);
+					// System.out.println("isMoveSuccess"+isMoveSuccess);
 					if(!myType.equals(stubChess.getTellWhoHasToPlay())){
 						  	moveServerPieces(vlerat[0], vlerat[1], vlerat[2], vlerat[3]);
 						  	System.out.println("------------------");
@@ -285,9 +274,7 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 						break;
 				case 5: legalMove = kingObject.legalMove(startRow, startColumn, desRow, desColumn, cellMatrix.getPlayerMatrix());
 						break;
-						
 			}
-			
 		}				
 		
 		if (legalMove)
@@ -297,7 +284,6 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 			int newDesColumn = 0;
 			switch (pieceBeingDragged)
 			{
-				
 				case 0: newDesRow = pawnObject.getDesRow();
 						newDesColumn = pawnObject.getDesColumn();
 						break;
@@ -316,55 +302,105 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 				case 5: newDesRow = kingObject.getDesRow();
 						newDesColumn = kingObject.getDesColumn();
 						break;
-						
 			}
 			
 			cellMatrix.setPlayerCell(newDesRow, newDesColumn, currentPlayer);
 			
 			if (pieceBeingDragged == 0 && (newDesRow == 0 || newDesRow == 7)) //If pawn has got to the end row
 			{
-				
-				boolean canPass = false;
-				int newPiece = 2;
-				String strNewPiece = "Rock";
-				String[] strPieces = {"Rock","Knight","Bishop","Queen"};
-				JOptionPane digBox = new JOptionPane("Choose the piece to change your pawn into", JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, strPieces, "Rock");
-				JDialog dig = digBox.createDialog(null, "pawn at end of board");
-				
-				do
-				{					
-					
-					dig.setVisible(true);					
-					
-					try
-					{
-						
-						strNewPiece = digBox.getValue().toString();
-						
-						for (int i = 0; i < strPieces.length; i++)
-						{
-						
-							if (strNewPiece.equalsIgnoreCase(strPieces[i]))
-							{
 
-								canPass = true;
-								newPiece = i + 1;
-								
-							}
-							
-						}
-						
-					}
-					catch (NullPointerException e)
-					{
-						canPass = false;							
-					}												
+			    try {
+                	ChessInterface stubChess;
+                	stubChess = (ChessInterface) Naming.lookup("rmi://" + chess.IP + ":" + chess.PORT + "/Chess");
+                	String flag = stubChess.getWhoPlayChange();
+                	if (flag.equals("none")) {
+                		stubChess.setWhoPlayChange(myType);
+                	} else {
+                		stubChess.setWhoPlayChange("none");
+                	}
 
-				}
-				while (canPass == false);
+                	flag = stubChess.getWhoPlayChange();
+                	if (flag.equals(myType)) {
+                		boolean canPass = false;
+                		int newPiece = 2;
+                		String strNewPiece = "Rock";
+                		String[] strPieces = { "Rock", "Knight", "Bishop", "Queen" };
+                		JOptionPane digBox = new JOptionPane("Choose the piece to change your pawn into",
+                				JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, strPieces, "Rock");
+                		JDialog dig = digBox.createDialog(null, "pawn at end of board");
+                		do {
 
-				cellMatrix.setPieceCell(newDesRow, newDesColumn, newPiece);
-				
+                			dig.setVisible(true);
+
+                			try {
+
+                				strNewPiece = digBox.getValue().toString();
+
+                				for (int i = 0; i < strPieces.length; i++) {
+
+                					if (strNewPiece.equalsIgnoreCase(strPieces[i])) {
+
+                						canPass = true;
+                						newPiece = i + 1;
+
+                					}
+
+                				}
+
+                			} catch (NullPointerException e) {
+                				canPass = false;
+                			}
+
+                		} while (canPass == false);
+                		cellMatrix.setPieceCell(newDesRow, newDesColumn, newPiece);
+                		stubChess.setPieceChange(newDesRow, newDesColumn, newPiece);
+                	} else {
+                		int[] pieceChange = stubChess.getPieceChange();
+                		cellMatrix.setPieceCell(pieceChange[0], pieceChange[1], pieceChange[2]);
+                	}
+
+                } catch (MalformedURLException e1) {
+                	// TODO Auto-generated catch block
+                	e1.printStackTrace();
+                } catch (RemoteException e1) {
+                	// TODO Auto-generated catch block
+                	e1.printStackTrace();
+                } catch (NotBoundException e1) {
+                	// TODO Auto-generated catch block
+                	e1.printStackTrace();
+                }
+
+				// boolean canPass = false;
+				// int newPiece = 2;
+				// String strNewPiece = "Rock";
+				// String[] strPieces = {"Rock","Knight","Bishop","Queen"};
+				// JOptionPane digBox = new JOptionPane("Choose the piece to change your pawn into", JOptionPane.QUESTION_MESSAGE, JOptionPane.OK_CANCEL_OPTION, null, strPieces, "Rock");
+				// JDialog dig = digBox.createDialog(null, "pawn at end of board");
+
+				// do
+				// {
+				// 	dig.setVisible(true);
+				// 	try
+				// 	{
+				// 		strNewPiece = digBox.getValue().toString();
+
+				// 		for (int i = 0; i < strPieces.length; i++)
+				// 		{
+				// 			if (strNewPiece.equalsIgnoreCase(strPieces[i]))
+				// 			{
+				// 				canPass = true;
+				// 				newPiece = i + 1;
+				// 			}
+				// 		}
+				// 	}
+				// 	catch (NullPointerException e)
+				// 	{
+				// 		canPass = false;
+				// 	}
+				// }
+				// while (canPass == false);
+
+				// cellMatrix.setPieceCell(newDesRow, newDesColumn, newPiece);
 			}
 			else
 			{
@@ -373,14 +409,11 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 							
 			if (cellMatrix.checkWinner(currentPlayer))
 			{
-				
 				hasWon = true;
-				strStatusMsg = getPlayerMsg();					
-				
+				strStatusMsg = getPlayerMsg();
 			}
 			else
-			{					
-			
+			{
 				if (currentPlayer == 1)
 				{						
 					currentPlayer = 2;						
@@ -389,18 +422,14 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 				{						
 					currentPlayer = 1;						
 				}
-				
+
 				strStatusMsg = getPlayerMsg();
-				
-			}			
-				
+			}
 		}
 		else
 		{
-			
 			switch (pieceBeingDragged)
 			{
-				
 				case 0: strStatusMsg = pawnObject.getErrorMsg();
 						break;
 				case 1: strStatusMsg = rockObject.getErrorMsg();
@@ -413,13 +442,10 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 						break;
 				case 5: strStatusMsg = kingObject.getErrorMsg();
 						break;
-						
 			}
 			isMoveSuccess = false;
 			unsucessfullDrag(desRow, desColumn);
-			
 		}
-			
 	}
 
 	private void unsucessfullDrag (int desRow, int desColumn)
@@ -427,18 +453,15 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 		isMove = false;
 		cellMatrix.setPieceCell(startRow, startColumn, pieceBeingDragged);
 		cellMatrix.setPlayerCell(startRow, startColumn, currentPlayer);
-		
 	}
 
 	private void updatePaintInstructions (int desRow, int desColumn)
 	{
-		
 		currentInstruction = new objPaintInstruction(startRow, startColumn, 1);
 		vecPaintInstructions.addElement(currentInstruction);
 			
 		currentInstruction = new objPaintInstruction(desRow, desColumn);
 		vecPaintInstructions.addElement(currentInstruction);
-		
 	}
 	
 	public void mouseClicked (MouseEvent e)
@@ -456,10 +479,8 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 
 	public void mousePressed (MouseEvent e)
 	{
-		
 		if ((!hasWon && !firstTime) &&(myType.equals("0") || myType.equals("1")))
-		{			
-		
+		{
 			int x = e.getX();
 			int y = e.getY();
 			
@@ -471,7 +492,6 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 			System.out.println("StartX:"+x+" StartY:"+y);
 			if ((x > 60 && x < 430) && (y > 60 && y < 430)) //in the correct bounds
 			{
-			
 				startRow = findWhichTileSelected(y);
 				startColumn = findWhichTileSelected(x);
 
@@ -484,7 +504,6 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 						cellMatrix.setPlayerCell(startRow, startColumn, 0);
 						isDragging = true;
 						isMove = true;
-						
 					}
 					else
 					{
@@ -500,7 +519,6 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 						cellMatrix.setPlayerCell(startRow, startColumn, 0);
 						isDragging = true;
 						isMove = true;
-						
 					}
 					else
 					{
@@ -526,14 +544,11 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 				// }
 			
 			}
-			
 		}
-		
 	}
 	
 	public void mouseReleased (MouseEvent e)
 	{
-		
 		if (isDragging) //Vlera e dragging eshte true
 		{	
 			isDragging = false;
@@ -561,18 +576,14 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 					}
 					startTimer();
 				}
-				
 			}
 		}
-		
 	}
 	
 	public void mouseDragged (MouseEvent e)
 	{
-		
 		if (isDragging)
 		{
-			
 			int x = e.getX();
 			int y = e.getY();
 			
@@ -580,7 +591,6 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 			{
 				if (refreshCounter >= refreshRate)
 				{
-								
 					currentX = x;
 					currentY = y;
 					refreshCounter = 0;
@@ -589,7 +599,6 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 					
 					updatePaintInstructions(desRow, desColumn);
 					repaint();
-					
 				}
 				else
 				{
@@ -597,7 +606,6 @@ public class windowChessBoard extends objChessBoard implements MouseListener, Mo
 				}
 			}
 		}
-			
 	}
 		
 	
