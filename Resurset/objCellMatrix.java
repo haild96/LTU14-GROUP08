@@ -16,8 +16,7 @@ public class objCellMatrix {
 
 			for (int column = 0; column < 8; column++) {
 
-				if (row <= 1) // first two rows
-				{
+				if (row <= 1) {// first two rows
 
 					playerMatrix[row][column] = 2;
 

@@ -2,10 +2,14 @@ package Resurset;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.rmi.Naming;
+
 import javax.swing.*;
 import javax.swing.JOptionPane;
 
-public class chessGUI implements ActionListener, KeyListener, WindowFocusListener{
+import ServerSide.ChessInterface;
+
+public class chessGUI implements ActionListener, KeyListener, WindowFocusListener {
 
 	private windowChessBoard mainChessBoard;
 	private objCreateAppletImage createImage;
@@ -21,11 +25,11 @@ public class chessGUI implements ActionListener, KeyListener, WindowFocusListene
 	public void chessGUI() {
 	}
 
-	public Container createGUI(JFrame mainApp) { 
+	public Container createGUI(JFrame mainApp) {
 
 		JPanel panRoot = new JPanel(new BorderLayout());
 		panRoot.setOpaque(true);
-		panRoot.setPreferredSize(new Dimension(550, 650));
+		panRoot.setPreferredSize(new Dimension(550, 600));
 
 		mainChessBoard = new windowChessBoard();
 		createImage = new objCreateAppletImage();
@@ -86,18 +90,20 @@ public class chessGUI implements ActionListener, KeyListener, WindowFocusListene
 		JPanel panNewGame = new JPanel();
 
 		panRoot.add(mainChessBoard, BorderLayout.NORTH);
-		panRoot.add(panBottomHalf, BorderLayout.SOUTH);
-		panBottomHalf.add(panNameArea, BorderLayout.WEST);
-		panNameArea.add(panPlayerOne);
-		panPlayerOne.add(lblPlayerOne);
-		panPlayerOne.add(txtPlayerOne);
-		panNameArea.add(panPlayerTwo);
-		panPlayerTwo.add(lblPlayerTwo);
-		panPlayerTwo.add(txtPlayerTwo);
-		panNameArea.add(panNameButton);
-		panNameButton.add(cmdSetNames);
-		panBottomHalf.add(panNewGame, BorderLayout.SOUTH);
+		panRoot.add(panNewGame, BorderLayout.CENTER);
 		panNewGame.add(cmdNewGame);
+
+//		panBottomHalf.add(panNameArea, BorderLayout.WEST);
+//		panNameArea.add(panPlayerOne);
+//		panPlayerOne.add(lblPlayerOne);
+//		panPlayerOne.add(txtPlayerOne);
+//		panNameArea.add(panPlayerTwo);
+//		panPlayerTwo.add(lblPlayerTwo);
+//		panPlayerTwo.add(txtPlayerTwo);
+//		panNameArea.add(panNameButton);
+//		panNameButton.add(cmdSetNames);
+//		panBottomHalf.add(panNewGame, BorderLayout.SOUTH);
+//		panNewGame.add(cmdNewGame);
 
 		panRoot.setBackground(clrBlue);
 		panBottomHalf.setBackground(clrBlue);
@@ -131,7 +137,28 @@ public class chessGUI implements ActionListener, KeyListener, WindowFocusListene
 			mainChessBoard.setNames(txtPlayerOne.getText(), txtPlayerTwo.getText());
 
 		} else if (e.getSource() == cmdNewGame) {
-			mainChessBoard.newGame();
+			String name = JOptionPane.showInputDialog("Your name");
+			if (name != null && name.length() > 0) {
+				try {
+					windowChessBoard.localName = name;
+					ChessInterface stubChess = (ChessInterface) Naming
+							.lookup("rmi://" + chess.IP + ":" + chess.PORT + "/Chess");
+					String[] names = stubChess.getNamePlayers();
+					if (!stubChess.getCheckExistWhoPlay() && names[0].equals("")) {
+						stubChess.setNamePlayer(name, 0);
+						JOptionPane.showMessageDialog(null, "You are black");
+					} else {
+						stubChess.setNamePlayer(name, 1);
+						JOptionPane.showMessageDialog(null, "You are white");
+					}
+					names = stubChess.getNamePlayers();
+					mainChessBoard.setNames(names[0], names[1]);
+					cmdNewGame.setVisible(false);
+					mainChessBoard.newGame();
+				} catch (Exception re) {
+					re.printStackTrace();
+				}
+			}
 		}
 
 	}

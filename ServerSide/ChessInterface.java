@@ -16,4 +16,6 @@ public interface ChessInterface extends Remote{
     public String getWhoPlayChange() throws RemoteException;
     public int[] getPieceChange() throws RemoteException;
     public void setPieceChange(int row, int col, int value) throws RemoteException;
+    public String[] getNamePlayers() throws RemoteException;
+    public void setNamePlayer(String name, int index)  throws RemoteException;
 }

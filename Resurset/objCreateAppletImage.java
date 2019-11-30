@@ -35,8 +35,7 @@ public class objCreateAppletImage {
 
 		BufferedInputStream imgStream = new BufferedInputStream(parentClass.getClass().getResourceAsStream(path));
 
-		if (imgStream != null) // If file exists
-		{
+		if (imgStream != null) { // If file exists
 
 			byte buff[] = new byte[fileSize]; // Create the array of bytes
 

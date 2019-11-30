@@ -11,6 +11,7 @@ public class ChessImpl extends UnicastRemoteObject implements ChessInterface{
 	public String userChange = "none";
 
 	public int[] pieceChange = new int [3];
+	public String[] strPlayerName = { "", "" };
 	
 	public ChessImpl() throws RemoteException {
 		super();
@@ -29,8 +30,6 @@ public class ChessImpl extends UnicastRemoteObject implements ChessInterface{
 	public int[] getMoveLocation() throws RemoteException{
 		return n;
 	}
-	
-	
 	
 	public void tellWhoHasToPlay(String s) throws RemoteException{
 		myType = s;
@@ -64,5 +63,13 @@ public class ChessImpl extends UnicastRemoteObject implements ChessInterface{
 
     	public int [] getPieceChange() throws RemoteException {
     	    return pieceChange;
+    	}
+    	
+    	public String[] getNamePlayers() throws RemoteException{
+    		return strPlayerName;
+    	}
+    	
+    	public void setNamePlayer(String name, int index) {
+    		strPlayerName[index] = name;
     	}
 }

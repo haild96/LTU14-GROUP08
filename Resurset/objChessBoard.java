@@ -17,7 +17,7 @@ public class objChessBoard extends Canvas {
 	}
 
 	public void paint(Graphics g) {
-		
+
 		if (vecPaintInstructions.size() == 0) {
 
 			g.setColor(new Color(184, 184, 184));
@@ -81,13 +81,11 @@ public class objChessBoard extends Canvas {
 	}
 
 	// Protected means it can only be used by this class, and classes extending it
-	protected void drawExtra(Graphics g) // Any class extending the chess board can use this method to add extra things
-											// like player pieces
-	{
+	protected void drawExtra(Graphics g) { // Any class extending the chess board can use this method to add extra
+
 	}
 
-	protected int findWhichTileSelected(int coor) // Finds which tile the mouse is over
-	{
+	protected int findWhichTileSelected(int coor) { // Finds which tile the mouse is over
 
 		for (int i = 0; i < 8; i++) {
 

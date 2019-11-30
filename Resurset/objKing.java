@@ -1,57 +1,46 @@
 package Resurset;
-public class objKing extends objChessPieces
-{
-	
-	public void objKing ()
-	{
+
+public class objKing extends objChessPieces {
+
+	public void objKing() {
 	}
-	
-	public boolean legalMove (int startRow, int startColumn, int desRow, int desColumn, int[][] playerMatrix)
-	{
-		
+
+	public boolean legalMove(int startRow, int startColumn, int desRow, int desColumn, int[][] playerMatrix) {
+
 		finalDesRow = desRow;
 		finalDesColumn = desColumn;
-		
-		if (desRow == (startRow + 1) && desColumn == startColumn) //S
-		{
+
+		if (desRow == (startRow + 1) && desColumn == startColumn) {// S
+
 			return true;
-		}
-		else if (desRow == (startRow + 1) && desColumn == (startColumn - 1)) //SW
-		{
+		} else if (desRow == (startRow + 1) && desColumn == (startColumn - 1)) { // SW
+
 			return true;
-		}
-		else if (desRow == startRow && desColumn == startColumn - 1) //W
-		{
+		} else if (desRow == startRow && desColumn == startColumn - 1) {// W
+
 			return true;
-		}
-		else if (desRow == (startRow - 1) && desColumn == (startColumn - 1)) //NW
-		{
+		} else if (desRow == (startRow - 1) && desColumn == (startColumn - 1)) {// NW
+
 			return true;
-		}
-		else if (desRow == (startRow - 1) && desColumn == startColumn) //N
-		{
+		} else if (desRow == (startRow - 1) && desColumn == startColumn) {// N
+
 			return true;
-		}
-		else if (desRow == (startRow - 1) && desColumn == (startColumn + 1)) //NE
-		{
+		} else if (desRow == (startRow - 1) && desColumn == (startColumn + 1)) { // NE
+
 			return true;
-		}
-		else if (desRow == startRow && desColumn == (startColumn + 1)) //E
-		{
+		} else if (desRow == startRow && desColumn == (startColumn + 1)) { // E
+
 			return true;
-		}
-		else if (desRow == (startRow + 1) && desColumn == (startColumn + 1)) //SE
-		{
+		} else if (desRow == (startRow + 1) && desColumn == (startColumn + 1)) { // SE
+
 			return true;
-		}
-		else
-		{
-			
+		} else {
+
 			strErrorMsg = "King can only move one space in any direction";
 			return false;
-			
+
 		}
-		
+
 	}
-	
+
 }
