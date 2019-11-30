@@ -16,7 +16,7 @@ public class startServer {
 	 */
 	public static void main(String[] args) {
 		 startSrv();
-		 startClient();
+//		 startClient();
 	}
 	
 	public static void startSrv(){
