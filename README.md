@@ -65,4 +65,6 @@
 <hr>
 <h1>Kết quả sau khi chạy chương trình</h1><br>
 <h2>Server<h2>
+  <img src="https://raw.githubusercontent.com/haild96/LTU14-GROUP08/master/Resurset/images/server.png">
 <h2>Client 1 và Client 2</h2><br>
+  <img src="https://raw.githubusercontent.com/haild96/LTU14-GROUP08/master/Resurset/images/clients.png">
