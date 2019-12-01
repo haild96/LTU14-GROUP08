@@ -92,19 +92,6 @@ public class chessGUI implements ActionListener, KeyListener, WindowFocusListene
 		panRoot.add(mainChessBoard, BorderLayout.NORTH);
 		panRoot.add(panNewGame, BorderLayout.CENTER);
 		panNewGame.add(cmdNewGame);
-
-//		panBottomHalf.add(panNameArea, BorderLayout.WEST);
-//		panNameArea.add(panPlayerOne);
-//		panPlayerOne.add(lblPlayerOne);
-//		panPlayerOne.add(txtPlayerOne);
-//		panNameArea.add(panPlayerTwo);
-//		panPlayerTwo.add(lblPlayerTwo);
-//		panPlayerTwo.add(txtPlayerTwo);
-//		panNameArea.add(panNameButton);
-//		panNameButton.add(cmdSetNames);
-//		panBottomHalf.add(panNewGame, BorderLayout.SOUTH);
-//		panNewGame.add(cmdNewGame);
-
 		panRoot.setBackground(clrBlue);
 		panBottomHalf.setBackground(clrBlue);
 		panNameArea.setBackground(clrBlue);

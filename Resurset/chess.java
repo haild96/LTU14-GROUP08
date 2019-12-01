@@ -20,10 +20,7 @@ public class chess extends JFrame {
 
 	public static void main(String[] args) {
 		try {
-			// ChessInterface stubChess=
-			// (ChessInterface)Naming.lookup("rmi://"+chess.IP+":"+chess.PORT+"/Chess");
-			// stubChess.Test();
-
+			
 			JFrame.setDefaultLookAndFeelDecorated(true); // Make it look nice
 			JFrame frame = new JFrame("Chess Game"); // Title
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
